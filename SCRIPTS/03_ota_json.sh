@@ -11,7 +11,7 @@ cat > ota/fw.json <<EOF
     {
       "build_date": "$CURRENT_DATE",
       "sha256sum": "$SHA256",
-      "url": "$OTA_URL/24.10.1/zerowrt-vip-v24.10.1-r25.04.17-k6.6.86-x86-64-generic-squashfs-combined-efi.img.gz"
+      "url": "$OTA_URL/24.10.1/OpenWrt-vip-v24.10.1-r25.04.17-k6.6.86-x86-64-generic-squashfs-combined-efi.img.gz"
     }
   ]
 }
@@ -23,7 +23,7 @@ SHA256=$(sha256sum bin/targets/rockchip/armv8*/*-squashfs-sysupgrade.img.gz | aw
     {
       "build_date": "$CURRENT_DATE",
       "sha256sum": "$SHA256",
-      "url": "$OTA_URL/24.10.1/zerowrt-vip-v24.10.1-r25.04.15-k6.6.86-rockchip-armv8-friendlyarm_nanopi-r4s-squashfs-sysupgrade.img.gz"
+      "url": "$OTA_URL/24.10.1/OpenWrt-vip-v24.10.1-r25.04.15-k6.6.86-rockchip-armv8-friendlyarm_nanopi-r4s-squashfs-sysupgrade.img.gz"
     }
   ]
 }
