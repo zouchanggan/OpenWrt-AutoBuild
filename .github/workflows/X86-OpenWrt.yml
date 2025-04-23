@@ -139,5 +139,21 @@ jobs:
         replacesArtifacts: true
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: ./artifact/*
+        body: |
+          **This is OpenWrt Firmware for X86_64**
+          ### 📒 固件信息
+          - 💻 平台架构: X86_64
+          - ⚽ 固件源码: https://github.com/openwrt/openwrt
+          - 💝 源码分支: ${{ env.latest_release }}
+          - 🚀 内核版本: ${{ env.KERNEL }}
+          - 🌐 默认地址: 192.168.1.10
+          - 🔑 默认密码: password
+          ### 🧊 固件版本
+          - 固件编译前最后一次➦[主源码](https://github.com/openwrt/openwrt)更新记录
+          - ${{ env.COMMIT_AUTHOR }}
+          - ${{ env.COMMIT_DATE }}
+          - ${{ env.COMMIT_MESSAGE }}
+          - ${{ env.COMMIT_HASH }}
+          
     - name: Print Disk Space After
       run: df -h
