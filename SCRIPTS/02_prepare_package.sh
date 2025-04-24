@@ -298,9 +298,6 @@ curl -L https://git.kejizero.online/zhao/files/raw/branch/main/images/bg1.jpg -o
 sed -i 's/iStoreOS/OpenWrt/' package/openwrt-package/istoreos-files/files/etc/board.d/10_system
 sed -i 's/192.168.100.1/192.168.1.10/' package/openwrt-package/istoreos-files/Makefile
 
-# 版本设置
-sed -i "s|_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description + ' / ' : '') + (luciversion || '')|_('Firmware Version'), 'OpenWrt定制版-R25.04.17-K6.6.86'|" feeds/luci/modules/luci-mod-status/htdocs/luci-static/resources/view/status/include/10_system.js
-
 # update feeds
 ./scripts/feeds update -a
 ./scripts/feeds install -a
