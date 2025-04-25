@@ -1,11 +1,15 @@
-name: X86-OpenWrt
+name: X86_64_OpenWrt
 
 on:
-#  schedule:
-#    - cron: 5 6 * * 0
   workflow_dispatch:
-  watch:
-    types: started
+    inputs:
+      LAN_IP:
+        description: 'Set LAN IP Address'
+        required: true
+        default: '192.168.1.1'
+# 定时触发编译
+  schedule:
+    - cron: 0 16 * * 5
 
 jobs:
   build:
@@ -113,6 +117,18 @@ jobs:
         COMMIT_HASH=$(git show -s --date=short --format="hash: %H")
         echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
         
+    - name: Set default LAN IP
+      run: |
+        cd $OPENWRT_PATH
+        SET_IP=${{ github.event.inputs.LAN_IP }}
+        if [[ $SET_IP =~ ^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$ ]]; then
+            #修改默认IP地址
+            sed -i "s/192\.168\.[0-9]*\.[0-9]*/$SET_IP/g" package/base-files/files/bin/config_generate
+            echo "Set LAN IP Address: $SET_IP"
+        else
+            echo "Invalid IP address, use default."
+        fi
+        
     - name: Make Download
       working-directory: ${{ github.workspace }}/openwrt
       run: |
@@ -124,6 +140,12 @@ jobs:
       continue-on-error: true
       run: |
         make -j$(nproc)
+        sed -n 's/.*lan) ipad=${ipaddr:-"\([0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\)"} ;;.*/\1/p' package/base-files/files/bin/config_generate | head -n 1 > IP_ADDR
+        [ -s IP_ADDR ] && echo "IP_ADDR=$(cat IP_ADDR)" >> $GITHUB_ENV
+        echo "status=success" >> $GITHUB_OUTPUT
+        echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
+        echo "FILE_DATE=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_ENV
+        echo "TAG_TIME=$(date +"%Y.%m.%d")" >> $GITHUB_ENV
         
     - name: If Error
       working-directory: ${{ github.workspace }}/openwrt
@@ -138,6 +160,7 @@ jobs:
       run: |
         rm -rf ./artifact/
         mkdir -p ./artifact/
+        mv openwrt/bin/targets/x86/64/*combined-efi.img* *combined-efi.vmdk* ./artifact/
         cd openwrt/bin/targets/x86/64
         echo "KERNEL=$(cat *.manifest | grep ^kernel | cut -d- -f2 | tr -d ' ')" >> $GITHUB_ENV
         
@@ -145,14 +168,14 @@ jobs:
       id: create_release
       uses: ncipollo/release-action@main
       with:
-        name: OpenWRT-${{ env.latest_release }}
+        name: ${{ env.FILE_DATE }}-OpenWrt-${{ env.latest_release }}
         allowUpdates: true
         prerelease: false
-        tag: ${{ env.latest_release }}
+        tag: ${{ env.TAG_TIME }}-${{ env.latest_release }}
         commit: "24.10"
         replacesArtifacts: true
         token: ${{ secrets.GITHUB_TOKEN }}
-        artifacts: openwrt/bin/targets/x86/64/*
+        artifacts: ./artifact/*
         body: |
           **This is OpenWrt Firmware for X86_64**
           ### 📒 固件信息
@@ -160,7 +183,7 @@ jobs:
           - ⚽ 固件源码: https://github.com/openwrt/openwrt
           - 💝 源码分支: ${{ env.latest_release }}
           - 🚀 内核版本: ${{ env.KERNEL }}
-          - 🌐 默认地址: 192.168.1.10
+          - 🌐 默认地址: ${{ env.IP_ADDR }}
           - 🔑 默认密码: password
           ### 🧊 固件版本
           - 固件编译前最后一次➦[主源码](https://github.com/openwrt/openwrt)更新记录
