@@ -72,7 +72,7 @@ sed -i 's/procd_set_param stdout 1/procd_set_param stdout 0/g' feeds/packages/ut
 sed -i 's/procd_set_param stderr 1/procd_set_param stderr 0/g' feeds/packages/utils/ttyd/files/ttyd.init
 
 # 修改默认ip
-sed -i "s/192.168.1.1/192.168.1.10/g" package/base-files/files/bin/config_generate
+# sed -i "s/192.168.1.1/192.168.1.10/g" package/base-files/files/bin/config_generate
 
 # 修改名称
 # sed -i 's/OpenWrt/ZeroWrt/' package/base-files/files/bin/config_generate
