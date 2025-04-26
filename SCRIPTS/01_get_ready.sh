@@ -79,10 +79,8 @@ find openwrt/package/* -maxdepth 0 ! -name 'firmware' ! -name 'kernel' ! -name '
 rm -rf ./openwrt_24/package/firmware ./openwrt_snap/package/kernel ./openwrt_snap/package/base-files ./openwrt_snap/package/Makefile
 cp -rf ./openwrt_24/package/* ./openwrt/package/
 cp -rf ./openwrt_24/feeds.conf.default ./openwrt/feeds.conf.default
-
-rm -rf ./openwrt-package/package/firmware ./openwrt_snap/package/kernel
-
-rm -rf luci-app-lucky/previews
+rm -rf ./openwrt-package/luci-app-lucky && rm -rf ./lucky/previews
+cp -rf ./lucky ./openwrt/package && rm -rf ./lucky
 
 # 退出脚本
 exit 0
